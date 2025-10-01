@@ -1,0 +1,3394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Hat Renewal Intelligence Platform | Architecture & Implementation Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #e00;
+            --primary-dark: #a00;
+            --secondary: #003366;
+            --accent: #0066cc;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --medium: #6c757d;
+            --dark: #212529;
+            --border: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        /* Header & Navigation */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: var(--secondary);
+            border-bottom: 3px solid var(--accent);
+            position: sticky;
+            top: 82px;
+            z-index: 999;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-tab:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-tab.active {
+            color: white;
+            border-bottom-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--secondary) 0%, #001a33 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--medium);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .card-body {
+            color: var(--medium);
+            line-height: 1.6;
+        }
+
+        .card-body ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card-body li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .card-body li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Tabs Component */
+        .tabs {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            background: var(--light);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--medium);
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: white;
+            color: var(--dark);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .layer {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .layer-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .layer-components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .component {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+            color: var(--secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Agent Cards */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .agent-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #001a33 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .agent-icon {
+            font-size: 2rem;
+        }
+
+        .agent-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .agent-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .agent-body {
+            padding: 1.5rem;
+        }
+
+        .agent-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .agent-section h4 {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .capability-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .capability-tag {
+            background: var(--light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        /* Data Table */
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .code-title {
+            color: #61dafb;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-phase {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin: 2rem 0;
+        }
+
+        .accordion-item {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: var(--light);
+        }
+
+        .accordion-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .accordion-icon {
+            font-size: 1.5rem;
+            color: var(--accent);
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-body {
+            max-height: 2000px;
+        }
+
+        .accordion-content {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--medium);
+            line-height: 1.6;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--medium);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* ROI Calculator */
+        .calculator {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+        }
+
+        .calculator-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group input {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .calculator-results {
+            background: linear-gradient(135deg, var(--secondary) 0%, #001a33 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Download Section */
+        .download-section {
+            background: linear-gradient(135deg, var(--light) 0%, white 100%);
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+            margin: 3rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .download-section h3 {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .download-section p {
+            font-size: 1.1rem;
+            color: var(--medium);
+            margin-bottom: 2rem;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary);
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .card-grid,
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline:before {
+                left: 20px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px;
+            }
+
+            .timeline-item:nth-child(odd) {
+                flex-direction: row;
+            }
+
+            .timeline-marker {
+                left: 20px;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .header, .nav-tabs, .footer, .btn, .download-section {
+                display: none;
+            }
+
+            .section {
+                display: block !important;
+                page-break-after: always;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-danger { color: var(--danger); }
+        .mt-1 { margin-top: 1rem; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">RH</div>
+                <div class="logo-text">
+                    <h1>Renewal Intelligence Platform</h1>
+                    <p>AI-Powered B2B Sales Automation</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="scrollToSection('roi')">Calculate ROI</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('download')">Download Docs</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <div class="nav-container">
+            <a class="nav-tab active" data-section="overview">Overview</a>
+            <a class="nav-tab" data-section="business">Business Case</a>
+            <a class="nav-tab" data-section="architecture">Architecture</a>
+            <a class="nav-tab" data-section="agents">AI Agents</a>
+            <a class="nav-tab" data-section="data">Data Model</a>
+            <a class="nav-tab" data-section="workflows">Workflows</a>
+            <a class="nav-tab" data-section="implementation">Implementation</a>
+            <a class="nav-tab" data-section="roi">ROI Calculator</a>
+            <a class="nav-tab" data-section="technical">Tech Specs</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>Transform Your Renewal Operations with AI</h2>
+        <p>A comprehensive platform combining 10 specialized AI agents, unified identity management, and partner orchestration to increase renewal rates to 85%+ while reducing time-to-quote by 35%</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">85%</div>
+                <div class="hero-stat-label">Target Renewal Rate</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">-35%</div>
+                <div class="hero-stat-label">Quote Cycle Time</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">10</div>
+                <div class="hero-stat-label">AI Agents</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">3:1</div>
+                <div class="hero-stat-label">Year 1 ROI</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <div class="section-header">
+                <h2>Executive Overview</h2>
+                <p>Understanding the platform, its goals, and strategic value</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <h3 class="card-title">The Challenge</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Fragmented identity across SFDC, ERP, and Portal (11% mismatch rate)</li>
+                            <li>Manual partner orchestration causing delays</li>
+                            <li>Complex quoting without embedded compliance</li>
+                            <li>Underutilized telemetry and health signals</li>
+                            <li>82% renewal rate leaving money on table</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🚀</div>
+                        <h3 class="card-title">The Solution</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Rosetta UID for unified identity reconciliation</li>
+                            <li>10 specialized AI agents for renewal lifecycle</li>
+                            <li>Quote Data Pack with embedded policy</li>
+                            <li>Partner PRM with automated routing & SLAs</li>
+                            <li>Context Metro for knowledge management</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📈</div>
+                        <h3 class="card-title">The Impact</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>+3pp renewal rate improvement → $1.3M revenue</li>
+                            <li>-35% quote cycle time → faster closes</li>
+                            <li>+33% rep capacity → equivalent to +17 FTEs</li>
+                            <li>95% automated UID reconciliation</li>
+                            <li>$6.7M annual benefit by Year 2</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 class="text-center mb-2">Platform Architecture Overview</h3>
+                <div class="layer">
+                    <div class="layer-title">🖥️ Engagement Layer</div>
+                    <div class="layer-components">
+                        <span class="component">CNX AM Workbench</span>
+                        <span class="component">Sales Manager Console</span>
+                        <span class="component">Partner Portal</span>
+                        <span class="component">Customer Self-Service</span>
+                        <span class="component">Slack/Teams Bots</span>
+                    </div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">🤖 Agentic Orchestration Layer</div>
+                    <div class="layer-components">
+                        <span class="component">Research Agent</span>
+                        <span class="component">Health Monitor</span>
+                        <span class="component">Pitch Builder</span>
+                        <span class="component">Contact Agent</span>
+                        <span class="component">Quote Agent</span>
+                        <span class="component">Risk Detector</span>
+                        <span class="component">Welcome Agent</span>
+                        <span class="component">Validation Agent</span>
+                        <span class="component">Metrics Agent</span>
+                        <span class="component">Forecast Agent</span>
+                    </div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">🧠 Context & Reasoning Layer</div>
+                    <div class="layer-components">
+                        <span class="component">Context Atoms Store</span>
+                        <span class="component">Vector Retrieval</span>
+                        <span class="component">Policy Engine</span>
+                        <span class="component">Tool Router</span>
+                        <span class="component">Rosetta UID Service</span>
+                    </div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">💾 Data & Integration Layer</div>
+                    <div class="layer-components">
+                        <span class="component">Snowflake (Gold/Silver/Bronze)</span>
+                        <span class="component">Kafka Event Bus</span>
+                        <span class="component">dbt Transformations</span>
+                        <span class="component">Airflow Orchestration</span>
+                    </div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">🔌 External Systems</div>
+                    <div class="layer-components">
+                        <span class="component">Salesforce CRM/CPQ</span>
+                        <span class="component">SAP HANA (ERP)</span>
+                        <span class="component">Supportable</span>
+                        <span class="component">Portal & Insights</span>
+                        <span class="component">Partner PRM</span>
+                        <span class="component">Outreach</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Current Renewal Rate</div>
+                    <div class="stat-value">82%</div>
+                    <div class="stat-change positive">Target: 85%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Time to Quote</div>
+                    <div class="stat-value">6.5d</div>
+                    <div class="stat-change positive">Target: 4.2d</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">UID Reconciliation</div>
+                    <div class="stat-value">89%</div>
+                    <div class="stat-change positive">Target: 95%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Quote Error Rate</div>
+                    <div class="stat-value">5%</div>
+                    <div class="stat-change positive">Target: 1%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Case Section -->
+        <section id="business" class="section">
+            <div class="section-header">
+                <h2>Business Case & Value Proposition</h2>
+                <p>Understanding the strategic rationale and expected returns</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-nav">
+                    <button class="tab-button active" data-tab="problem">Problem Statement</button>
+                    <button class="tab-button" data-tab="solution">Solution Approach</button>
+                    <button class="tab-button" data-tab="benefits">Expected Benefits</button>
+                    <button class="tab-button" data-tab="risks">Risk Mitigation</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="problem">
+                        <h3>Critical Pain Points</h3>
+                        <div class="accordion">
+                            <div class="accordion-item">
+                                <div class="accordion-header">
+                                    <span class="accordion-title">1. Fragmented Identity & Entitlements</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-body">
+                                    <div class="accordion-content">
+                                        <p><strong>Impact:</strong> 11% UID mismatch rate drives misattribution, delays, and revenue leakage</p>
+                                        <ul>
+                                            <li>Salesforce Account ID ≠ ERP Customer ID</li>
+                                            <li>Supportable Customer ID ≠ Portal Org ID</li>
+                                            <li>Manual spreadsheet reconciliation prone to errors</li>
+                                            <li>Entitlement checks inconsistent across systems</li>
+                                            <li>$1.2M annual revenue impact from attribution errors</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <div class="accordion-header">
+                                    <span class="accordion-title">2. Manual Partner Orchestration</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-body">
+                                    <div class="accordion-content">
+                                        <p><strong>Impact:</strong> 30% of renewals experience partner-related delays averaging 8 days</p>
+                                        <ul>
+                                            <li>No standardized VAR engagement process</li>
+                                            <li>Manual PO tracking via email and calls</li>
+                                            <li>No SLA visibility for partner deliverables</li>
+                                            <li>Distributor data misaligned with CRM</li>
+                                            <li>Average 8-day delay on partner-led renewals</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <div class="accordion-header">
+                                    <span class="accordion-title">3. Quoting Complexity</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-body">
+                                    <div class="accordion-content">
+                                        <p><strong>Impact:</strong> 6.5 day average quote cycle, 5% error rate, 18% require manual rework</p>
+                                        <ul>
+                                            <li>Compliance not embedded in CPQ workflow</li>
+                                            <li>Discount approvals take 2-5 days</li>
+                                            <li>No standardized Quote Data Pack format</li>
+                                            <li>Manual distributor quote delivery</li>
+                                            <li>SEAP checks performed post-quote</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <div class="accordion-header">
+                                    <span class="accordion-title">4. Underutilized Telemetry</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-body">
+                                    <div class="accordion-content">
+                                        <p><strong>Impact:</strong> 40% of at-risk accounts not identified until <30 days before expiration</p>
+                                        <ul>
+                                            <li>Usage data siloed in Product Analytics</li>
+                                            <li>Support signals fragmented across systems</li>
+                                            <li>Health scoring manual, infrequent (180d)</li>
+                                            <li>No predictive churn models in production</li>
+                                            <li>Late detection = limited mitigation time</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="solution">
+                        <h3>Four-Pillar Solution Architecture</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-icon">🔑</div>
+                                    <h3 class="card-title">Pillar 1: Identity</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h4>Rosetta UID Service</h4>
+                                    <p>Unified identifier reconciling SFDC, ERP, Portal, and Supportable</p>
+                                    <ul>
+                                        <li>Real-time reconciliation with confidence scoring</li>
+                                        <li>Automated detection of mismatches</li>
+                                        <li>Human review queue for conflicts</li>
+                                        <li>Audit trail for compliance</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-icon">🤖</div>
+                                    <h3 class="card-title">Pillar 2: AI Agents</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h4>10 Specialized Agents</h4>
+                                    <p>Mapped to the 120-day renewal lifecycle</p>
+                                    <ul>
+                                        <li>Research, Health, Pitch, Contact, Quote</li>
+                                        <li>Risk Detection, Validation, Welcome</li>
+                                        <li>Metrics Calculation, Forecasting</li>
+                                        <li>Human-in-the-loop at decision points</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-icon">📋</div>
+                                    <h3 class="card-title">Pillar 3: Governance</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h4>Policy & Compliance</h4>
+                                    <p>Embedded rules and approval workflows</p>
+                                    <ul>
+                                        <li>Quote Data Pack standardization</li>
+                                        <li>Discount rules in CPQ</li>
+                                        <li>SEAP compliance automation</li>
+                                        <li>MEDDPICC triggers for >$50K</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-icon">🤝</div>
+                                    <h3 class="card-title">Pillar 4: Partners</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h4>PRM Orchestration</h4>
+                                    <p>Automated VAR coordination and SLA tracking</p>
+                                    <ul>
+                                        <li>Portal↔CRM integration</li>
+                                        <li>Automated routing rules</li>
+                                        <li>SLA dashboards</li>
+                                        <li>PO intake standardization</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="benefits">
+                        <h3>Quantified Benefits (3-Year Projection)</h3>
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Benefit Category</th>
+                                        <th>Year 1</th>
+                                        <th>Year 2</th>
+                                        <th>Year 3</th>
+                                        <th>Cumulative</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Revenue Retention (+3pp)</strong></td>
+                                        <td>$1.3M</td>
+                                        <td>$1.5M</td>
+                                        <td>$1.7M</td>
+                                        <td>$4.5M</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rep Productivity (+33%)</strong></td>
+                                        <td>$2.0M</td>
+                                        <td>$2.2M</td>
+                                        <td>$2.4M</td>
+                                        <td>$6.6M</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Quote Accuracy (-80%)</strong></td>
+                                        <td>$0.4M</td>
+                                        <td>$0.5M</td>
+                                        <td>$0.5M</td>
+                                        <td>$1.4M</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Faster Cycle (-35%)</strong></td>
+                                        <td>$0.5M</td>
+                                        <td>$0.6M</td>
+                                        <td>$0.7M</td>
+                                        <td>$1.8M</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Auto-Renewal (<$10K)</strong></td>
+                                        <td>-</td>
+                                        <td>$1.0M</td>
+                                        <td>$1.5M</td>
+                                        <td>$2.5M</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Predictive Upsell</strong></td>
+                                        <td>-</td>
+                                        <td>$2.0M</td>
+                                        <td>$2.5M</td>
+                                        <td>$4.5M</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Partner Efficiency</strong></td>
+                                        <td>-</td>
+                                        <td>$0.3M</td>
+                                        <td>$0.4M</td>
+                                        <td>$0.7M</td>
+                                    </tr>
+                                    <tr style="background: var(--light); font-weight: bold;">
+                                        <td><strong>TOTAL ANNUAL BENEFIT</strong></td>
+                                        <td><strong>$4.2M</strong></td>
+                                        <td><strong>$8.1M</strong></td>
+                                        <td><strong>$9.7M</strong></td>
+                                        <td><strong>$22.0M</strong></td>
+                                    </tr>
+                                    <tr style="color: var(--danger);">
+                                        <td><strong>Total Investment</strong></td>
+                                        <td>($2.3M)</td>
+                                        <td>($0.8M)</td>
+                                        <td>($0.9M)</td>
+                                        <td>($4.0M)</td>
+                                    </tr>
+                                    <tr style="background: var(--success); color: white; font-weight: bold;">
+                                        <td><strong>NET BENEFIT</strong></td>
+                                        <td><strong>$1.9M</strong></td>
+                                        <td><strong>$7.3M</strong></td>
+                                        <td><strong>$8.8M</strong></td>
+                                        <td><strong>$18.0M</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="mt-2"><strong>Payback Period:</strong> 7 months | <strong>3-Year ROI:</strong> 450%</p>
+                    </div>
+                    <div class="tab-pane" id="risks">
+                        <h3>Risk Register & Mitigation Strategies</h3>
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Risk</th>
+                                        <th>Probability</th>
+                                        <th>Impact</th>
+                                        <th>Mitigation Strategy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>UID reconciliation fails</strong></td>
+                                        <td>Medium</td>
+                                        <td>High</td>
+                                        <td>Phased rollout, confidence scoring, human review queue, rollback plan</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Agent hallucination</strong></td>
+                                        <td>Low</td>
+                                        <td>High</td>
+                                        <td>Grounding in context atoms, citation requirements, human approval gates</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Partner adoption resistance</strong></td>
+                                        <td>Medium</td>
+                                        <td>Medium</td>
+                                        <td>PRM training, incentive alignment, gradual rollout, dedicated support</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Data quality issues</strong></td>
+                                        <td>High</td>
+                                        <td>Medium</td>
+                                        <td>Validation at ingestion, quality dashboards, anomaly detection, cleanup sprints</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>SFDC→ERP migration disruption</strong></td>
+                                        <td>Medium</td>
+                                        <td>High</td>
+                                        <td>Parallel run period, automated reconciliation, rollback procedures</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Compliance violations</strong></td>
+                                        <td>Low</td>
+                                        <td>High</td>
+                                        <td>Policy engine enforcement, audit logging, quarterly reviews, legal sign-off</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Agent performance degradation</strong></td>
+                                        <td>Medium</td>
+                                        <td>Medium</td>
+                                        <td>Continuous evaluation, A/B testing, model retraining, feedback loops</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>User resistance (CNX AMs)</strong></td>
+                                        <td>Medium</td>
+                                        <td>Medium</td>
+                                        <td>Early involvement, training program, clear value demonstration, champions</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="section">
+            <div class="section-header">
+                <h2>Platform Architecture</h2>
+                <p>Technical design, integration patterns, and system topology</p>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 class="text-center mb-2">Layered Architecture Diagram</h3>
+                <p class="text-center mb-2" style="color: var(--medium);">Each layer provides specific capabilities and interfaces to adjacent layers</p>
+                
+                <div class="layer">
+                    <div class="layer-title">Layer 1: Engagement Layer (Human Interfaces)</div>
+                    <div class="layer-components">
+                        <span class="component">CNX AM Workbench</span>
+                        <span class="component">Sales Manager Console</span>
+                        <span class="component">Partner Portal</span>
+                        <span class="component">Customer Self-Service</span>
+                        <span class="component">Slack Bot</span>
+                        <span class="component">Teams Bot</span>
+                        <span class="component">Email Add-ins</span>
+                        <span class="component">Mobile Apps</span>
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-title">Layer 2: Agentic Orchestration Layer (Metro Stations)</div>
+                    <div class="layer-components">
+                        <span class="component">Playbook Orchestrator</span>
+                        <span class="component">Research Agent (RH-RESEARCH-01)</span>
+                        <span class="component">Health Monitor (RH-HEALTH-01)</span>
+                        <span class="component">Pitch Builder (RH-PITCH-01)</span>
+                        <span class="component">Contact Agent (RH-CONTACT-01)</span>
+                        <span class="component">Quote Agent (RH-QUOTE-01)</span>
+                        <span class="component">Risk Detector (RH-RISK-01)</span>
+                        <span class="component">Welcome Agent (RH-WELCOME-01)</span>
+                        <span class="component">Validation Agent (RH-VALIDATION-01)</span>
+                        <span class="component">Metrics Agent (RH-METRICS-01)</span>
+                        <span class="component">Forecast Agent (RH-FORECAST-01)</span>
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-title">Layer 3: Context & Reasoning Layer (Intelligence)</div>
+                    <div class="layer-components">
+                        <span class="component">Context Atoms Store (pgvector)</span>
+                        <span class="component">Vector Retrieval (Hybrid BM25 + Dense)</span>
+                        <span class="component">Policy Engine (Discount/Compliance)</span>
+                        <span class="component">Tool Router</span>
+                        <span class="component">Rosetta UID Service</span>
+                        <span class="component">Prompt/Playbook Catalog</span>
+                        <span class="component">Evaluation Harness</span>
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-title">Layer 4: Data & Integration Layer (Medallion Architecture)</div>
+                    <div class="layer-components">
+                        <span class="component">Bronze Layer (Raw)</span>
+                        <span class="component">Silver Layer (Conformed)</span>
+                        <span class="component">Gold Layer (Account 360°)</span>
+                        <span class="component">Kafka Event Bus</span>
+                        <span class="component">dbt Transformations</span>
+                        <span class="component">Airflow Orchestration</span>
+                        <span class="component">Feature Store</span>
+                        <span class="component">Vector DB</span>
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-title">Layer 5: External Systems (Source Systems of Record)</div>
+                    <div class="layer-components">
+                        <span class="component">Salesforce CRM/CPQ</span>
+                        <span class="component">SAP HANA (ERP)</span>
+                        <span class="component">Supportable</span>
+                        <span class="component">Red Hat Portal</span>
+                        <span class="component">Red Hat Insights</span>
+                        <span class="component">Partner PRM</span>
+                        <span class="component">Outreach</span>
+                        <span class="component">Telephony (Twilio)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid mt-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔄</div>
+                        <h3 class="card-title">Data Flow Patterns</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Event-Driven Architecture</h4>
+                        <ul>
+                            <li><strong>Opportunity Created:</strong> Triggers Research Agent</li>
+                            <li><strong>Usage Drop Detected:</strong> Triggers Risk Assessment</li>
+                            <li><strong>Quote Requested:</strong> Triggers Quote Generation</li>
+                            <li><strong>Contact Attempt Failed:</strong> Triggers Escalation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔐</div>
+                        <h3 class="card-title">Security Architecture</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Defense in Depth</h4>
+                        <ul>
+                            <li><strong>Network:</strong> VPC isolation, security groups</li>
+                            <li><strong>Application:</strong> OAuth 2.0, JWT tokens</li>
+                            <li><strong>Data:</strong> AES-256 at rest, TLS 1.3 in transit</li>
+                            <li><strong>Compliance:</strong> SOC 2, GDPR, CCPA ready</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <h3 class="card-title">Observability Stack</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Full System Visibility</h4>
+                        <ul>
+                            <li><strong>Tracing:</strong> OpenTelemetry distributed traces</li>
+                            <li><strong>Metrics:</strong> Prometheus + Grafana</li>
+                            <li><strong>Logs:</strong> ELK Stack (Elasticsearch/Kibana)</li>
+                            <li><strong>Prompts:</strong> Versioned prompt store with A/B testing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Agents Section -->
+        <section id="agents" class="section">
+            <div class="section-header">
+                <h2>AI Agent Specifications</h2>
+                <p>Detailed capabilities, configurations, and integration points for all 10 agents</p>
+            </div>
+
+            <div class="agent-grid">
+                <!-- Research Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">🔍</span>
+                        <div class="agent-info">
+                            <h3>Renewal Research Agent</h3>
+                            <div class="agent-code">RH-RESEARCH-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">opportunity_analysis</span>
+                                <span class="capability-tag">customer_profiling</span>
+                                <span class="capability-tag">usage_analysis</span>
+                                <span class="capability-tag">contact_discovery</span>
+                                <span class="capability-tag">competitive_intel</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Trigger</h4>
+                            <p>120 days before contract expiration</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Key Integrations</h4>
+                            <p>RHSC, Supportable, Portal, ERP</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Output</h4>
+                            <p>Renewal Dossier with account summary, usage highlights, risk factors, and recommended playbook</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Monitor Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">💚</span>
+                        <div class="agent-info">
+                            <h3>Customer Health Monitor</h3>
+                            <div class="agent-code">RH-HEALTH-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">health_scoring</span>
+                                <span class="capability-tag">adoption_tracking</span>
+                                <span class="capability-tag">risk_assessment</span>
+                                <span class="capability-tag">satisfaction_monitoring</span>
+                                <span class="capability-tag">trend_analysis</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Scoring Components</h4>
+                            <p>Satisfaction (30%), Adoption (25%), Engagement (25%), Support (20%)</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>ML Model</h4>
+                            <p>XGBoost v2.1 with 85% prediction accuracy</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Alert Thresholds</h4>
+                            <p>🟢 Green: 75+ | 🟡 Yellow: 50-74 | 🔴 Red: <50</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pitch Builder Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">🎯</span>
+                        <div class="agent-info">
+                            <h3>Customer Pitch Builder</h3>
+                            <div class="agent-code">RH-PITCH-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">value_proposition</span>
+                                <span class="capability-tag">upsell_identification</span>
+                                <span class="capability-tag">roi_calculation</span>
+                                <span class="capability-tag">presentation_generation</span>
+                                <span class="capability-tag">pricing_optimization</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Template Library</h4>
+                            <p>47 industry-specific templates with 73% conversion rate</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Upsell Rules</h4>
+                            <p>Min health: 60 | Min adoption: 70% | Max discount: 15%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">📞</span>
+                        <div class="agent-info">
+                            <h3>Smart Contact Agent</h3>
+                            <div class="agent-code">RH-CONTACT-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">multi_channel_outreach</span>
+                                <span class="capability-tag">response_tracking</span>
+                                <span class="capability-tag">calendar_optimization</span>
+                                <span class="capability-tag">personalization</span>
+                                <span class="capability-tag">escalation_management</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Channels</h4>
+                            <p>Email, Phone, SMS, Partner coordination</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Escalation Rules</h4>
+                            <p>3 attempts → Partner | 5 attempts → Manager</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Performance</h4>
+                            <p>68% response rate within 48 hours</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">💰</span>
+                        <div class="agent-info">
+                            <h3>Quote Generation Agent</h3>
+                            <div class="agent-code">RH-QUOTE-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">pricing_calculation</span>
+                                <span class="capability-tag">discount_optimization</span>
+                                <span class="capability-tag">quote_generation</span>
+                                <span class="capability-tag">approval_routing</span>
+                                <span class="capability-tag">coterm_management</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Auto-Approve</h4>
+                            <p><$5K value AND <10% discount</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>SLA Targets</h4>
+                            <p>Standard: 24h | Complex: 48h | Revision: 12h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Detector -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">⚠️</span>
+                        <div class="agent-info">
+                            <h3>Risk Detection Agent</h3>
+                            <div class="agent-code">RH-RISK-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">churn_prediction</span>
+                                <span class="capability-tag">competitive_detection</span>
+                                <span class="capability-tag">usage_anomaly_detection</span>
+                                <span class="capability-tag">satisfaction_monitoring</span>
+                                <span class="capability-tag">mitigation_triggering</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Detection Rules</h4>
+                            <p>No login 30d: 0.3 | Competitor mention: 0.7 | Usage drop 50%: 0.5</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Performance</h4>
+                            <p>78% true positive rate</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Welcome Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">👋</span>
+                        <div class="agent-info">
+                            <h3>Welcome Process Agent</h3>
+                            <div class="agent-code">RH-WELCOME-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">onboarding_orchestration</span>
+                                <span class="capability-tag">portal_guidance</span>
+                                <span class="capability-tag">adoption_enablement</span>
+                                <span class="capability-tag">training_scheduling</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Sequence</h4>
+                            <p>Email day 1 → Call day 2 → Portal day 7 → Review day 30</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Targets</h4>
+                            <p>75% portal adoption | 60% Insights deployment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">✅</span>
+                        <div class="agent-info">
+                            <h3>Process Validation Agent</h3>
+                            <div class="agent-code">RH-VALIDATION-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">data_validation</span>
+                                <span class="capability-tag">process_compliance</span>
+                                <span class="capability-tag">quality_scoring</span>
+                                <span class="capability-tag">audit_logging</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Checks</h4>
+                            <p>PII redaction | Contract terms | Pricing authority | SEAP alignment</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Performance</h4>
+                            <p>2.3% rejection rate | <500ms processing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">📈</span>
+                        <div class="agent-info">
+                            <h3>Metrics Calculation Agent</h3>
+                            <div class="agent-code">RH-METRICS-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">kpi_calculation</span>
+                                <span class="capability-tag">trend_analysis</span>
+                                <span class="capability-tag">benchmark_comparison</span>
+                                <span class="capability-tag">report_generation</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>KPIs Tracked</h4>
+                            <p>Renewal rate | Time to quote | Health score | Touchpoint completion</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Reporting</h4>
+                            <p>Operational: Daily | Tactical: Weekly | Strategic: Monthly</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Agent -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-icon">🔮</span>
+                        <div class="agent-info">
+                            <h3>Renewal Forecast Agent</h3>
+                            <div class="agent-code">RH-FORECAST-01</div>
+                        </div>
+                    </div>
+                    <div class="agent-body">
+                        <div class="agent-section">
+                            <h4>Capabilities</h4>
+                            <div class="capability-tags">
+                                <span class="capability-tag">renewal_prediction</span>
+                                <span class="capability-tag">revenue_forecasting</span>
+                                <span class="capability-tag">pipeline_analysis</span>
+                                <span class="capability-tag">scenario_modeling</span>
+                            </div>
+                        </div>
+                        <div class="agent-section">
+                            <h4>ML Models</h4>
+                            <p>Logistic regression | Random forest | Gradient boost</p>
+                        </div>
+                        <div class="agent-section">
+                            <h4>Accuracy</h4>
+                            <p>87% within 5% margin of error</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Model Section -->
+        <section id="data" class="section">
+            <div class="section-header">
+                <h2>Data Model & Schema</h2>
+                <p>Database design, entity relationships, and data contracts</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-nav">
+                    <button class="tab-button active" data-tab="rosetta">Rosetta UID</button>
+                    <button class="tab-button" data-tab="renewal">Renewal Facts</button>
+                    <button class="tab-button" data-tab="health">Health Features</button>
+                    <button class="tab-button" data-tab="quote">Quote Data Pack</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="rosetta">
+                        <h3>Rosetta UID Service - Master Identity Table</h3>
+                        <p>The Rosetta UID table is the cornerstone of the platform, reconciling identities across all systems.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">rosetta_uid table schema</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre>CREATE TABLE context_metro.rosetta_uid (
+  rosetta_id UUID PRIMARY KEY,
+  sfdc_account_id VARCHAR(18),
+  sfdc_opportunity_id VARCHAR(18),
+  erp_customer_id VARCHAR(50),
+  erp_contract_id VARCHAR(50),
+  supportable_customer_id VARCHAR(50),
+  portal_org_id VARCHAR(50),
+  
+  -- Quality metrics
+  uid_confidence_score DECIMAL(3,2), -- 0.00-1.00
+  reconciliation_status VARCHAR(20),  -- matched, partial, conflict, manual
+  
+  -- Audit trail
+  last_verified_at TIMESTAMP,
+  reconciliation_rules_applied JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</pre>
+                        </div>
+                        <div class="card-grid mt-2">
+                            <div class="card">
+                                <h4>Confidence Scoring</h4>
+                                <ul>
+                                    <li><strong>1.00:</strong> Perfect match across all systems</li>
+                                    <li><strong>0.75-0.99:</strong> High confidence, minor discrepancies</li>
+                                    <li><strong>0.50-0.74:</strong> Medium confidence, requires review</li>
+                                    <li><strong><0.50:</strong> Low confidence, manual reconciliation required</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>Reconciliation Rules</h4>
+                                <ul>
+                                    <li>Exact name + domain match: 1.00</li>
+                                    <li>Fuzzy name match (>90% similar): 0.85</li>
+                                    <li>Email domain match only: 0.60</li>
+                                    <li>Manual override: Preserve audit trail</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="renewal">
+                        <h3>Renewal Opportunity Schema</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">renewal_opportunity table</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre>CREATE TABLE context_metro.renewal_opportunity (
+  opp_id UUID PRIMARY KEY,
+  rosetta_id UUID REFERENCES rosetta_uid(rosetta_id),
+  account_id UUID REFERENCES account_360(account_id),
+  subscription_id UUID,
+  
+  -- Opportunity details
+  target_close_date DATE,
+  renewal_amount DECIMAL(12,2),
+  expansion_amount DECIMAL(12,2),
+  forecast_category VARCHAR(20), -- commit, best_case, pipeline
+  stage VARCHAR(50),
+  
+  -- Scoring
+  health_score DECIMAL(3,2),
+  churn_risk_score DECIMAL(3,2),
+  expansion_potential_score DECIMAL(3,2),
+  
+  -- Ownership
+  owner_id VARCHAR(50),
+  partner_id VARCHAR(50),
+  
+  -- Timing
+  days_to_expiration INTEGER,
+  renewal_type VARCHAR(50), -- standard, coterm, early_renewal
+  
+  -- Compliance
+  meddpicc_required BOOLEAN,
+  
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);</pre>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="health">
+                        <h3>Usage & Health Features</h3>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">usage_health_features table</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre>CREATE TABLE context_metro.usage_health_features (
+  feature_id UUID PRIMARY KEY,
+  rosetta_id UUID REFERENCES rosetta_uid(rosetta_id),
+  measurement_date DATE,
+  
+  -- Usage metrics
+  active_users_30d INTEGER,
+  active_users_90d INTEGER,
+  feature_adoption_score DECIMAL(3,2),
+  usage_depth_percentile INTEGER,
+  usage_trend_90d VARCHAR(20), -- increasing, stable, declining
+  
+  -- Support metrics
+  open_tickets_count INTEGER,
+  avg_resolution_days DECIMAL(5,2),
+  csat_score DECIMAL(3,2),
+  escalation_count INTEGER,
+  
+  -- Engagement metrics
+  portal_logins_30d INTEGER,
+  insights_deployed BOOLEAN,
+  last_health_check_date DATE,
+  touchpoint_response_rate DECIMAL(3,2),
+  
+  -- Composite scores (calculated by RH-HEALTH-01)
+  health_score DECIMAL(3,2),
+  churn_risk_score DECIMAL(3,2),
+  expansion_score DECIMAL(3,2),
+  
+  created_at TIMESTAMP
+);</pre>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="quote">
+                        <h3>Quote Data Pack Schema</h3>
+                        <p>Standardized format for all renewal quotes, ensuring consistency and compliance</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">quote_data_pack table</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre>CREATE TABLE context_metro.quote_data_pack (
+  quote_id UUID PRIMARY KEY,
+  rosetta_id UUID REFERENCES rosetta_uid(rosetta_id),
+  opp_id UUID REFERENCES renewal_opportunity(opp_id),
+  
+  -- Quote basics
+  quote_number VARCHAR(50),
+  quote_version INTEGER,
+  quote_status VARCHAR(20), -- draft, pending, approved, sent, signed
+  
+  -- Line items (JSON array)
+  line_items JSONB, -- [{sku, qty, term, list_price, net_price, discount_pct}]
+  
+  -- Pricing & terms
+  total_list_price DECIMAL(12,2),
+  total_net_price DECIMAL(12,2),
+  total_discount_pct DECIMAL(5,2),
+  payment_terms VARCHAR(50),
+  billing_frequency VARCHAR(20),
+  contract_term_months INTEGER,
+  
+  -- Partner details
+  partner_type VARCHAR(20), -- direct, var, distributor
+  partner_id VARCHAR(50),
+  partner_discount_pct DECIMAL(5,2),
+  
+  -- Compliance & approval
+  compliance_checks_passed JSONB,
+  approval_required BOOLEAN,
+  approval_status VARCHAR(20),
+  approver_id VARCHAR(50),
+  approval_timestamp TIMESTAMP,
+  
+  -- Delivery tracking
+  delivery_method VARCHAR(20), -- email, portal, partner_system
+  sent_timestamp TIMESTAMP,
+  viewed_timestamp TIMESTAMP,
+  signed_timestamp TIMESTAMP,
+  
+  -- Provenance
+  created_by VARCHAR(50),
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflows Section -->
+        <section id="workflows" class="section">
+            <div class="section-header">
+                <h2>Renewal Workflows</h2>
+                <p>End-to-end process flows and state machines</p>
+            </div>
+
+            <h3>Standard 120-Day Renewal Journey</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-120 Days</div>
+                        <div class="timeline-title">Research Phase</div>
+                        <p><strong>Agent:</strong> Research Agent (RH-RESEARCH-01)</p>
+                        <p><strong>Actions:</strong> Pull opportunity data, analyze usage, identify contacts, score risk</p>
+                        <p><strong>Output:</strong> Renewal Dossier</p>
+                        <p><strong>Gate:</strong> UID confidence >0.75, contact identified</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-90 Days</div>
+                        <div class="timeline-title">Health Assessment</div>
+                        <p><strong>Agent:</strong> Health Monitor (RH-HEALTH-01)</p>
+                        <p><strong>Actions:</strong> Calculate health score, identify expansion opportunities</p>
+                        <p><strong>Output:</strong> Health Report with risk classification</p>
+                        <p><strong>Gate:</strong> Health score calculated, playbook assigned</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-75 Days</div>
+                        <div class="timeline-title">Value Narrative Creation</div>
+                        <p><strong>Agent:</strong> Pitch Builder (RH-PITCH-01)</p>
+                        <p><strong>Actions:</strong> Generate ROI story, create QBR deck, identify upsells</p>
+                        <p><strong>Output:</strong> Pitch Package with value proposition</p>
+                        <p><strong>Gate:</strong> Usage data available, templates rendered</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-60 Days</div>
+                        <div class="timeline-title">Initial Contact</div>
+                        <p><strong>Agent:</strong> Contact Agent (RH-CONTACT-01)</p>
+                        <p><strong>Actions:</strong> Email sequence, call scheduling, partner coordination</p>
+                        <p><strong>Output:</strong> Engagement Log with response tracking</p>
+                        <p><strong>Gate:</strong> Contact attempt logged, response tracked</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-45 Days</div>
+                        <div class="timeline-title">Quote Generation</div>
+                        <p><strong>Agent:</strong> Quote Agent (RH-QUOTE-01)</p>
+                        <p><strong>Actions:</strong> Calculate pricing, check policy, generate Quote Data Pack</p>
+                        <p><strong>Output:</strong> Quote Data Pack with compliance validation</p>
+                        <p><strong>Gate:</strong> Policy compliant, SEAP validated, approval if needed</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-30 Days</div>
+                        <div class="timeline-title">Negotiation</div>
+                        <p><strong>Agent:</strong> Quote Agent + Validation Agent</p>
+                        <p><strong>Actions:</strong> Handle objections, revise terms, track changes</p>
+                        <p><strong>Output:</strong> Revised quote within policy</p>
+                        <p><strong>Gate:</strong> Discount within policy or approved</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-14 Days</div>
+                        <div class="timeline-title">Legal Review</div>
+                        <p><strong>Agent:</strong> Validation Agent</p>
+                        <p><strong>Actions:</strong> Contract review, CLM integration, e-signature setup</p>
+                        <p><strong>Output:</strong> Contract ready for signature</p>
+                        <p><strong>Gate:</strong> Legal terms approved, compliance checks passed</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-phase">T-0 Days</div>
+                        <div class="timeline-title">Close & Book</div>
+                        <p><strong>Agent:</strong> Validation + Metrics Agents</p>
+                        <p><strong>Actions:</strong> Capture win/loss, update ERP, log learnings</p>
+                        <p><strong>Output:</strong> Closed opportunity, updated forecast</p>
+                        <p><strong>Gate:</strong> Signature received, booking confirmed in ERP</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid mt-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🚨</div>
+                        <h3 class="card-title">At-Risk Playbook</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Triggered when Health Score < 60</h4>
+                        <ul>
+                            <li>Immediate executive escalation</li>
+                            <li>Technical workshop scheduled within 5 days</li>
+                            <li>Dedicated CSM engagement</li>
+                            <li>Enhanced discount authority (+5%)</li>
+                            <li>Weekly check-ins until risk mitigated</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📈</div>
+                        <h3 class="card-title">High-Growth Playbook</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Triggered when Health Score > 80 + Usage Growth</h4>
+                        <ul>
+                            <li>Expansion opportunity assessment</li>
+                            <li>Upsell presentation prepared</li>
+                            <li>Executive business review scheduled</li>
+                            <li>Co-term optimization analysis</li>
+                            <li>Strategic account planning initiated</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title">Event-Driven Actions</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Real-Time Response to Signals</h4>
+                        <ul>
+                            <li><strong>Usage Drop >30%:</strong> Adoption call within 3 days</li>
+                            <li><strong>Competitor Mention:</strong> Competitive brief generated</li>
+                            <li><strong>Support Escalation:</strong> Account team alerted</li>
+                            <li><strong>Partner PO Delay:</strong> Manager notified at +5 days</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Section -->
+        <section id="implementation" class="section">
+            <div class="section-header">
+                <h2>Implementation Roadmap</h2>
+                <p>Phased rollout plan with milestones and success criteria</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-nav">
+                    <button class="tab-button active" data-tab="phase1">Phase 1: Foundation</button>
+                    <button class="tab-button" data-tab="phase2">Phase 2: Scale</button>
+                    <button class="tab-button" data-tab="phase3">Phase 3: Optimize</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="phase1">
+                        <h3>Phase 1: Foundation (Months 1-3)</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>🔑 Rosetta UID Service MVP</h4>
+                                <ul>
+                                    <li>SFDC ↔ ERP reconciliation</li>
+                                    <li>Confidence scoring algorithm</li>
+                                    <li>Manual review queue UI</li>
+                                    <li>Batch reconciliation job (nightly)</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >85% reconciliation rate</p>
+                            </div>
+                            <div class="card">
+                                <h4>📋 Quote Data Pack Schema</h4>
+                                <ul>
+                                    <li>JSON schema definition</li>
+                                    <li>CPQ integration for generation</li>
+                                    <li>Partner delivery templates</li>
+                                    <li>Validation rules implemented</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> 50 test quotes generated</p>
+                            </div>
+                            <div class="card">
+                                <h4>🧠 Context Metro Bootstrap</h4>
+                                <ul>
+                                    <li>Ingest existing renewal docs</li>
+                                    <li>Extract 500+ context atoms</li>
+                                    <li>Set up vector search index</li>
+                                    <li>Test retrieval accuracy</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >0.85 retrieval precision</p>
+                            </div>
+                            <div class="card">
+                                <h4>🤖 3 Priority Agents</h4>
+                                <ul>
+                                    <li>Research Agent operational</li>
+                                    <li>Health Monitor operational</li>
+                                    <li>Quote Agent operational</li>
+                                    <li>Evaluation harness built</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >0.75 accuracy on test set</p>
+                            </div>
+                            <div class="card">
+                                <h4>⚖️ Policy Engine v1</h4>
+                                <ul>
+                                    <li>Discount rules codified</li>
+                                    <li>SEAP compliance checks</li>
+                                    <li>Approval routing logic</li>
+                                    <li>Audit logging enabled</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> 100% policy enforcement</p>
+                            </div>
+                        </div>
+                        <div class="data-table mt-2">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Week</th>
+                                        <th>Milestone</th>
+                                        <th>Deliverable</th>
+                                        <th>Owner</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1-2</td>
+                                        <td>Kickoff & Discovery</td>
+                                        <td>Technical assessment, team formation</td>
+                                        <td>PM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3-4</td>
+                                        <td>Data Foundation</td>
+                                        <td>Rosetta UID schema, Snowflake setup</td>
+                                        <td>Data Eng</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5-6</td>
+                                        <td>Agent Development</td>
+                                        <td>Research & Health agents built</td>
+                                        <td>AI Eng</td>
+                                    </tr>
+                                    <tr>
+                                        <td>7-8</td>
+                                        <td>Policy Engine</td>
+                                        <td>Rules codified, approval workflow</td>
+                                        <td>RevOps</td>
+                                    </tr>
+                                    <tr>
+                                        <td>9-10</td>
+                                        <td>Integration Testing</td>
+                                        <td>End-to-end test with 10 opportunities</td>
+                                        <td>QA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>11-12</td>
+                                        <td>Pilot Launch</td>
+                                        <td>5 CNX AMs processing 50 renewals</td>
+                                        <td>PM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="phase2">
+                        <h3>Phase 2: Scale (Months 4-6)</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>🤝 Partner PRM Integration</h4>
+                                <ul>
+                                    <li>Portal ↔ CRM bidirectional sync</li>
+                                    <li>Automated VAR routing rules</li>
+                                    <li>SLA dashboards for partners</li>
+                                    <li>PO intake standardization</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >80% partner SLA attainment</p>
+                            </div>
+                            <div class="card">
+                                <h4>🤖 Complete Agent Suite</h4>
+                                <ul>
+                                    <li>Deploy remaining 7 agents</li>
+                                    <li>Playbook Orchestrator live</li>
+                                    <li>Agent-to-agent handoffs</li>
+                                    <li>Full lifecycle coverage</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> All 10 agents operational</p>
+                            </div>
+                            <div class="card">
+                                <h4>🧮 Health Scoring ML Model</h4>
+                                <ul>
+                                    <li>XGBoost model trained on historical data</li>
+                                    <li>Real-time scoring pipeline</li>
+                                    <li>Feature store integration</li>
+                                    <li>Model monitoring dashboard</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >80% prediction accuracy</p>
+                            </div>
+                            <div class="card">
+                                <h4>🔄 Automated Workflows</h4>
+                                <ul>
+                                    <li>Standard renewal motion (T-120 to T-0)</li>
+                                    <li>Event-driven detours implemented</li>
+                                    <li>At-risk & high-growth playbooks</li>
+                                    <li>Exception handling workflows</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> 50% renewals AI-assisted</p>
+                            </div>
+                            <div class="card">
+                                <h4>✅ Human-in-the-Loop UI</h4>
+                                <ul>
+                                    <li>Approval console built</li>
+                                    <li>Override mechanisms tested</li>
+                                    <li>Quality gates enforced</li>
+                                    <li>Feedback capture system</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> <15% human override rate</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="phase3">
+                        <h3>Phase 3: Optimize (Months 7-12)</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>⚡ Auto-Renewal for <$10K</h4>
+                                <ul>
+                                    <li>Fully automated for healthy accounts</li>
+                                    <li>Policy-compliant only</li>
+                                    <li>Human approval for exceptions</li>
+                                    <li>Customer notification workflow</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> 30% of <$10K automated</p>
+                            </div>
+                            <div class="card">
+                                <h4>🔮 Predictive Analytics</h4>
+                                <ul>
+                                    <li>Forecast agent with 85% accuracy</li>
+                                    <li>Churn prediction model (78% precision)</li>
+                                    <li>Expansion opportunity scoring</li>
+                                    <li>What-if scenario modeling</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >85% forecast accuracy</p>
+                            </div>
+                            <div class="card">
+                                <h4>🎭 Advanced Orchestration</h4>
+                                <ul>
+                                    <li>Multi-agent collaboration</li>
+                                    <li>Dynamic playbook selection</li>
+                                    <li>Self-healing workflows</li>
+                                    <li>Adaptive learning from outcomes</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> <5% workflow failures</p>
+                            </div>
+                            <div class="card">
+                                <h4>📊 Self-Service Analytics</h4>
+                                <ul>
+                                    <li>Manager dashboards operational</li>
+                                    <li>Rep performance insights</li>
+                                    <li>Customer health trends</li>
+                                    <li>Predictive alerts configured</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> >70% self-service adoption</p>
+                            </div>
+                            <div class="card">
+                                <h4>🔄 Continuous Improvement</h4>
+                                <ul>
+                                    <li>A/B testing framework for prompts</li>
+                                    <li>Feedback loops from overrides</li>
+                                    <li>Model retraining pipeline</li>
+                                    <li>Quarterly performance reviews</li>
+                                </ul>
+                                <p class="mt-1"><strong>Success Criteria:</strong> Continuous metric improvement</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROI Calculator Section -->
+        <section id="roi" class="section">
+            <div class="section-header">
+                <h2>ROI Calculator</h2>
+                <p>Calculate the expected return on investment for your organization</p>
+            </div>
+
+            <div class="calculator">
+                <h3>Input Your Current State</h3>
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label>Current Annual Renewal Revenue ($M)</label>
+                        <input type="number" id="revenue" value="45" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Current Renewal Rate (%)</label>
+                        <input type="number" id="renewalRate" value="82" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Number of CNX AMs</label>
+                        <input type="number" id="numReps" value="50" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Avg CNX AM Fully-Loaded Cost ($K)</label>
+                        <input type="number" id="repCost" value="120" step="5">
+                    </div>
+                    <div class="input-group">
+                        <label>Current Time-to-Quote (days)</label>
+                        <input type="number" id="quoteTime" value="6.5" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label>Current Quote Error Rate (%)</label>
+                        <input type="number" id="errorRate" value="5" step="1">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-large" onclick="calculateROI()">Calculate ROI</button>
+                
+                <div class="calculator-results mt-2" id="roiResults" style="display: none;">
+                    <div class="result-item">
+                        <div class="result-label">Year 1 Net Benefit</div>
+                        <div class="result-value" id="year1Benefit">$0M</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">3-Year Cumulative</div>
+                        <div class="result-value" id="cumulativeBenefit">$0M</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Payback Period</div>
+                        <div class="result-value" id="paybackPeriod">0 mo</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">3-Year ROI</div>
+                        <div class="result-value" id="roi">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid mt-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <h3 class="card-title">Revenue Impact</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>+3pp renewal rate improvement</li>
+                            <li>Faster close cycles (more deals/quarter)</li>
+                            <li>Predictive upsell identification</li>
+                            <li>Reduced revenue leakage from errors</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⏱️</div>
+                        <h3 class="card-title">Efficiency Gains</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>-83% prep time (3h → 30min)</li>
+                            <li>+33% rep capacity (150 → 200 accounts)</li>
+                            <li>-35% quote cycle time</li>
+                            <li>-80% quote error rate</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <h3 class="card-title">Quality Improvements</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>95% automated UID reconciliation</li>
+                            <li>100% policy compliance</li>
+                            <li>Real-time risk detection</li>
+                            <li>Consistent customer experience</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specs Section -->
+        <section id="technical" class="section">
+            <div class="section-header">
+                <h2>Technical Specifications</h2>
+                <p>Technology stack, integrations, and deployment architecture</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-nav">
+                    <button class="tab-button active" data-tab="stack">Tech Stack</button>
+                    <button class="tab-button" data-tab="integrations">Integrations</button>
+                    <button class="tab-button" data-tab="security">Security</button>
+                    <button class="tab-button" data-tab="ops">Operations</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="stack">
+                        <h3>Technology Stack</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>Orchestration & AI</h4>
+                                <ul>
+                                    <li><strong>Agent Framework:</strong> LangGraph</li>
+                                    <li><strong>Workflow Engine:</strong> Temporal</li>
+                                    <li><strong>LLMs:</strong> Claude Sonnet 4.5 (reasoning), Claude Haiku (routing)</li>
+                                    <li><strong>Embeddings:</strong> text-embedding-3-large</li>
+                                    <li><strong>Event Streaming:</strong> Kafka</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>Data Layer</h4>
+                                <ul>
+                                    <li><strong>Data Warehouse:</strong> Snowflake</li>
+                                    <li><strong>Vector DB:</strong> PostgreSQL + pgvector</li>
+                                    <li><strong>Caching:</strong> Redis</li>
+                                    <li><strong>Feature Store:</strong> Snowflake Feature Store</li>
+                                    <li><strong>ETL:</strong> dbt + Airflow</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>ML & Analytics</h4>
+                                <ul>
+                                    <li><strong>Health Scoring:</strong> XGBoost</li>
+                                    <li><strong>Forecasting:</strong> Scikit-learn</li>
+                                    <li><strong>Vector Search:</strong> Hybrid (BM25 + Dense)</li>
+                                    <li><strong>Reranking:</strong> Cross-encoder</li>
+                                    <li><strong>Dashboards:</strong> Tableau, Grafana</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>Application Layer</h4>
+                                <ul>
+                                    <li><strong>Backend:</strong> Python (FastAPI)</li>
+                                    <li><strong>Frontend:</strong> React + Next.js</li>
+                                    <li><strong>API Gateway:</strong> Kong</li>
+                                    <li><strong>Auth:</strong> OAuth 2.0 + JWT</li>
+                                    <li><strong>Mobile:</strong> React Native</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>Observability</h4>
+                                <ul>
+                                    <li><strong>Tracing:</strong> OpenTelemetry</li>
+                                    <li><strong>Metrics:</strong> Prometheus</li>
+                                    <li><strong>Logging:</strong> ELK Stack</li>
+                                    <li><strong>Dashboards:</strong> Grafana</li>
+                                    <li><strong>Alerts:</strong> PagerDuty</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>Infrastructure</h4>
+                                <ul>
+                                    <li><strong>Cloud:</strong> AWS (primary)</li>
+                                    <li><strong>Container:</strong> Docker + Kubernetes</li>
+                                    <li><strong>IaC:</strong> Terraform</li>
+                                    <li><strong>CI/CD:</strong> GitHub Actions</li>
+                                    <li><strong>Secrets:</strong> AWS Secrets Manager</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="integrations">
+                        <h3>Integration Architecture</h3>
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>System</th>
+                                        <th>Integration Type</th>
+                                        <th>Data Flow</th>
+                                        <th>Sync Frequency</th>
+                                        <th>SLA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Salesforce CRM/CPQ</strong></td>
+                                        <td>REST API + Webhooks</td>
+                                        <td>Bidirectional</td>
+                                        <td>Real-time (events) + Batch (nightly)</td>
+                                        <td><5min for events</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>SAP HANA (ERP)</strong></td>
+                                        <td>OData + CDC</td>
+                                        <td>Bidirectional</td>
+                                        <td>Real-time (CDC) + Batch (hourly)</td>
+                                        <td><15min for critical updates</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Supportable</strong></td>
+                                        <td>REST API</td>
+                                        <td>Read-only</td>
+                                        <td>Hourly batch</td>
+                                        <td><1hr data freshness</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Red Hat Portal</strong></td>
+                                        <td>GraphQL</td>
+                                        <td>Read-only</td>
+                                        <td>Daily batch + On-demand</td>
+                                        <td><24hr data freshness</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Red Hat Insights</strong></td>
+                                        <td>Event Hub</td>
+                                        <td>Read-only</td>
+                                        <td>Real-time (events)</td>
+                                        <td><5min for events</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Partner PRM</strong></td>
+                                        <td>REST API + SFTP</td>
+                                        <td>Bidirectional</td>
+                                        <td>Batch (4x daily)</td>
+                                        <td><6hr for quotes</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Outreach</strong></td>
+                                        <td>Webhooks</td>
+                                        <td>Bidirectional</td>
+                                        <td>Event-driven</td>
+                                        <td>Immediate</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Telephony (Twilio)</strong></td>
+                                        <td>REST API + Webhooks</td>
+                                        <td>Bidirectional</td>
+                                        <td>Event-driven</td>
+                                        <td>Immediate</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="code-block mt-2">
+                            <div class="code-header">
+                                <span class="code-title">Example Integration: Salesforce Webhook Handler</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre>// Webhook endpoint for Salesforce Opportunity updates
+@app.post("/webhooks/sfdc/opportunity")
+async def handle_sfdc_opportunity_webhook(
+    payload: OpportunityWebhook,
+    background_tasks: BackgroundTasks
+):
+    # Validate webhook signature
+    if not verify_sfdc_signature(payload):
+        raise HTTPException(401, "Invalid signature")
+    
+    # Extract event details
+    event_type = payload.event_type
+    opp_id = payload.opportunity_id
+    
+    # Route to appropriate handler based on event
+    if event_type == "created":
+        background_tasks.add_task(
+            trigger_research_agent,
+            opp_id=opp_id
+        )
+    elif event_type == "stage_changed":
+        background_tasks.add_task(
+            update_journey_state,
+            opp_id=opp_id,
+            new_stage=payload.stage
+        )
+    
+    return {"status": "accepted"}</pre>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="security">
+                        <h3>Security & Compliance</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>🔐 Authentication & Authorization</h4>
+                                <ul>
+                                    <li><strong>SSO:</strong> SAML 2.0 / OIDC integration</li>
+                                    <li><strong>API Auth:</strong> OAuth 2.0 with JWT tokens</li>
+                                    <li><strong>RBAC:</strong> Role-based access control</li>
+                                    <li><strong>MFA:</strong> Enforced for all admin access</li>
+                                    <li><strong>Session:</strong> 8-hour timeout with refresh</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>🛡️ Data Protection</h4>
+                                <ul>
+                                    <li><strong>Encryption at Rest:</strong> AES-256</li>
+                                    <li><strong>Encryption in Transit:</strong> TLS 1.3</li>
+                                    <li><strong>Key Management:</strong> AWS KMS</li>
+                                    <li><strong>PII Handling:</strong> Auto-detection + redaction</li>
+                                    <li><strong>Data Retention:</strong> 7 years contracts, 90 days ops</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>📋 Compliance Frameworks</h4>
+                                <ul>
+                                    <li><strong>SOC 2 Type II:</strong> Annual audit</li>
+                                    <li><strong>GDPR:</strong> Right to access, deletion, portability</li>
+                                    <li><strong>CCPA:</strong> California privacy compliance</li>
+                                    <li><strong>ISO 27001:</strong> Information security management</li>
+                                    <li><strong>PCI DSS:</strong> Level 2 (if applicable)</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>🔍 Audit & Monitoring</h4>
+                                <ul>
+                                    <li><strong>All Actions Logged:</strong> User, timestamp, IP</li>
+                                    <li><strong>Audit Trail:</strong> Immutable, 7-year retention</li>
+                                    <li><strong>Anomaly Detection:</strong> ML-based user behavior</li>
+                                    <li><strong>Quarterly Reviews:</strong> Access & permissions</li>
+                                    <li><strong>Pen Testing:</strong> Annual third-party</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="ops">
+                        <h3>Operational Excellence</h3>
+                        <div class="card-grid">
+                            <div class="card">
+                                <h4>📊 SLOs & SLIs</h4>
+                                <ul>
+                                    <li><strong>Availability:</strong> 99.9% uptime</li>
+                                    <li><strong>Latency (p95):</strong> <5s for agent responses</li>
+                                    <li><strong>Error Rate:</strong> <1% for all operations</li>
+                                    <li><strong>Data Freshness:</strong> As per integration SLAs</li>
+                                    <li><strong>Recovery Time:</strong> <15min for critical services</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>🚨 Incident Response</h4>
+                                <ul>
+                                    <li><strong>On-Call Rotation:</strong> 24/7 coverage</li>
+                                    <li><strong>P0/P1 Response:</strong> <15min acknowledgment</li>
+                                    <li><strong>Escalation Path:</strong> Eng → Lead → VP</li>
+                                    <li><strong>Postmortems:</strong> Within 48hr for P0/P1</li>
+                                    <li><strong>Status Page:</strong> status.renewalplatform.com</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>📈 Capacity Planning</h4>
+                                <ul>
+                                    <li><strong>Auto-Scaling:</strong> CPU >70% triggers scale-up</li>
+                                    <li><strong>Load Testing:</strong> Quarterly stress tests</li>
+                                    <li><strong>Growth Model:</strong> 30% YoY volume increase</li>
+                                    <li><strong>Cost Monitoring:</strong> Budget alerts at 80%</li>
+                                    <li><strong>Resource Optimization:</strong> Monthly reviews</li>
+                                </ul>
+                            </div>
+                            <div class="card">
+                                <h4>🔄 Deployment</h4>
+                                <ul>
+                                    <li><strong>Strategy:</strong> Blue/green for zero downtime</li>
+                                    <li><strong>Frequency:</strong> Weekly releases</li>
+                                    <li><strong>Rollback:</strong> <5min automated rollback</li>
+                                    <li><strong>Testing:</strong> Unit, integration, E2E, canary</li>
+                                    <li><strong>Change Control:</strong> All changes peer-reviewed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download Section -->
+        <section id="download" class="download-section">
+            <h3>Download Complete Documentation</h3>
+            <p>Get the full architecture guide, implementation playbooks, and technical specifications</p>
+            <div class="download-buttons">
+                <button class="btn btn-primary btn-large" onclick="downloadDocs('full')">📄 Complete Package (PDF)</button>
+                <button class="btn btn-secondary btn-large" onclick="downloadDocs('business')">💼 Business Summary</button>
+                <button class="btn btn-secondary btn-large" onclick="downloadDocs('technical')">🔧 Technical Guide</button>
+                <button class="btn btn-secondary btn-large" onclick="window.print()">🖨️ Print This Page</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#agents">AI Agents</a></li>
+                    <li><a href="#implementation">Implementation</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#business">Business Case</a></li>
+                    <li><a href="#roi">ROI Calculator</a></li>
+                    <li><a href="#technical">Tech Specs</a></li>
+                    <li><a href="#download">Documentation</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="mailto:platform-team@redhat.com">Contact Team</a></li>
+                    <li><a href="#">Request Demo</a></li>
+                    <li><a href="#">Training Resources</a></li>
+                    <li><a href="#">API Documentation</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>About</h4>
+                <p>Red Hat Renewal Intelligence Platform combines cutting-edge AI with proven renewal processes to maximize retention and drive growth.</p>
+                <p style="margin-top: 1rem; opacity: 0.7;">Built with ❤️ by the RevOps & AI Platform Team</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Red Hat, Inc. All rights reserved. | Version 1.0 | Last Updated: September 30, 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active tab
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Scroll to top of content
+                document.querySelector('.main-content').scrollInto
+                View({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Tab switching within sections
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                const tabsContainer = this.closest('.tabs');
+                
+                // Update active button
+                tabsContainer.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding pane
+                tabsContainer.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                tabsContainer.querySelector(`#${tabId}`).classList.add('active');
+            });
+        });
+
+        // Accordion
+        document.querySelectorAll('.accordion-item').forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            header.addEventListener('click', function() {
+                item.classList.toggle('active');
+            });
+        });
+
+        // Scroll to section
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('pre').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // ROI Calculator
+        function calculateROI() {
+            // Get inputs
+            const revenue = parseFloat(document.getElementById('revenue').value) * 1000000;
+            const renewalRate = parseFloat(document.getElementById('renewalRate').value) / 100;
+            const numReps = parseInt(document.getElementById('numReps').value);
+            const repCost = parseFloat(document.getElementById('repCost').value) * 1000;
+            const quoteTime = parseFloat(document.getElementById('quoteTime').value);
+            const errorRate = parseFloat(document.getElementById('errorRate').value) / 100;
+
+            // Calculate baseline metrics
+            const currentChurn = 1 - renewalRate;
+            const currentLostRevenue = revenue * currentChurn;
+            const totalRepCost = numReps * repCost;
+
+            // Calculate improvements
+            // 1. Revenue retention (+3pp improvement)
+            const renewalImprovement = 0.03;
+            const newRenewalRate = renewalRate + renewalImprovement;
+            const revenueRetentionBenefit = revenue * renewalImprovement;
+
+            // 2. Rep productivity (+33% capacity)
+            const productivityGain = 0.33;
+            const equivalentReps = numReps * productivityGain;
+            const productivityBenefit = equivalentReps * repCost;
+
+            // 3. Quote accuracy (-80% error rate)
+            const errorReduction = 0.80;
+            const currentReworkCost = revenue * errorRate * 0.02; // 2% of revenue affected
+            const accuracyBenefit = currentReworkCost * errorReduction;
+
+            // 4. Faster cycle (-35% time)
+            const cycleReduction = 0.35;
+            const cycleTimeBenefit = revenue * 0.01 * cycleReduction; // 1% revenue per 35% improvement
+
+            // Year 1 totals
+            const year1Benefit = revenueRetentionBenefit + productivityBenefit + accuracyBenefit + cycleTimeBenefit;
+            
+            // Year 2 additions (auto-renewal + predictive upsell)
+            const autoRenewalBenefit = productivityBenefit * 0.5; // 50% additional from automation
+            const upsellBenefit = revenue * 0.05; // 5% expansion
+            const year2Benefit = year1Benefit + autoRenewalBenefit + upsellBenefit;
+
+            // Year 3 (continued growth)
+            const year3Benefit = year2Benefit * 1.2; // 20% improvement
+
+            // Investment costs
+            const platformDev = 800000;
+            const dataInfra = 400000;
+            const integration = 300000;
+            const changeManagement = 200000;
+            const year1Ops = 600000;
+            const year1Investment = platformDev + dataInfra + integration + changeManagement + year1Ops;
+            const year2Investment = 800000;
+            const year3Investment = 900000;
+
+            // Calculate net benefits
+            const year1Net = year1Benefit - year1Investment;
+            const year2Net = year2Benefit - year2Investment;
+            const year3Net = year3Benefit - year3Investment;
+            const cumulativeNet = year1Net + year2Net + year3Net;
+            const totalInvestment = year1Investment + year2Investment + year3Investment;
+
+            // Payback period (months)
+            const monthlyBenefit = year1Benefit / 12;
+            const paybackMonths = Math.ceil(year1Investment / monthlyBenefit);
+
+            // ROI percentage
+            const roiPercent = (cumulativeNet / totalInvestment) * 100;
+
+            // Display results
+            document.getElementById('year1Benefit').textContent = `$${(year1Net / 1000000).toFixed(1)}M`;
+            document.getElementById('cumulativeBenefit').textContent = `$${(cumulativeNet / 1000000).toFixed(1)}M`;
+            document.getElementById('paybackPeriod').textContent = `${paybackMonths} mo`;
+            document.getElementById('roi').textContent = `${Math.round(roiPercent)}%`;
+            
+            document.getElementById('roiResults').style.display = 'grid';
+        }
+
+        // Download documentation
+        function downloadDocs(type) {
+            // In a real implementation, this would trigger actual file downloads
+            alert(`Downloading ${type} documentation package...\n\nIn production, this would provide:\n- PDF documentation\n- Implementation playbooks\n- API specifications\n- Training materials`);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Highlight section on scroll
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const sections = document.querySelectorAll('.section.active');
+                const scrollPos = window.scrollY + 200;
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionBottom = sectionTop + section.offsetHeight;
+
+                    if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+                        const sectionId = section.id;
+                        document.querySelectorAll('.nav-tab').forEach(tab => {
+                            if (tab.getAttribute('data-section') === sectionId) {
+                                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                                tab.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, 100);
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set initial section
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                const tab = document.querySelector(`[data-section="${hash}"]`);
+                if (tab) {
+                    tab.click();
+                }
+            }
+
+            // Auto-calculate ROI with default values
+            calculateROI();
+        });
+
+        // Print optimization
+        window.addEventListener('beforeprint', () => {
+            // Show all sections for printing
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('active');
+            });
+        });
+
+        window.addEventListener('afterprint', () => {
+            // Restore active section only
+            const activeTab = document.querySelector('.nav-tab.active');
+            const activeSectionId = activeTab.getAttribute('data-section');
+            document.querySelectorAll('.section').forEach(section => {
+                if (section.id !== activeSectionId) {
+                    section.classList.remove('active');
+                }
+            });
+        });
+
+        // Analytics tracking (placeholder)
+        function trackEvent(category, action, label) {
+            // In production, integrate with your analytics platform
+            console.log('Analytics:', category, action, label);
+        }
+
+        // Track section views
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                trackEvent('Navigation', 'Section View', section);
+            });
+        });
+
+        // Track ROI calculations
+        document.querySelector('#roi .btn-primary').addEventListener('click', () => {
+            trackEvent('Engagement', 'ROI Calculated', 'Calculator');
+        });
+
+        // Track downloads
+        function downloadDocs(type) {
+            trackEvent('Conversion', 'Download', type);
+            alert(`📥 Downloading ${type} documentation...\n\nPackage includes:\n• Architecture diagrams\n• Implementation guides\n• API specifications\n• Training materials\n• Sample code & configs`);
+        }
+
+        // Auto-update stats with animation
+        function animateValue(element, start, end, duration) {
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.round(current) + (element.textContent.includes('%') ? '%' : '');
+            }, 16);
+        }
+
+        // Responsive navigation
+        function checkMobileNav() {
+            const navContainer = document.querySelector('.nav-container');
+            if (window.innerWidth < 768) {
+                navContainer.style.overflowX = 'auto';
+            }
+        }
+
+        window.addEventListener('resize', checkMobileNav);
+        checkMobileNav();
+
+        // Add loading states for async operations
+        function showLoading(element) {
+            element.style.opacity = '0.5';
+            element.style.pointerEvents = 'none';
+        }
+
+        function hideLoading(element) {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                const activeTab = document.querySelector('.nav-tab.active');
+                const allTabs = Array.from(document.querySelectorAll('.nav-tab'));
+                const currentIndex = allTabs.indexOf(activeTab);
+                
+                let newIndex;
+                if (e.key === 'ArrowLeft') {
+                    newIndex = currentIndex > 0 ? currentIndex - 1 : allTabs.length - 1;
+                } else {
+                    newIndex = currentIndex < allTabs.length - 1 ? currentIndex + 1 : 0;
+                }
+                
+                allTabs[newIndex].click();
+            }
+        });
+
+        // Context menu for code blocks
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const copyBtn = block.querySelector('.copy-btn');
+                if (copyBtn) {
+                    copyBtn.click();
+                }
+            });
+        });
+
+        // Auto-save form inputs to localStorage
+        const inputs = document.querySelectorAll('#roi input');
+        inputs.forEach(input => {
+            // Load saved value
+            const savedValue = localStorage.getItem(input.id);
+            if (savedValue) {
+                input.value = savedValue;
+            }
+            
+            // Save on change
+            input.addEventListener('change', () => {
+                localStorage.setItem(input.id, input.value);
+            });
+        });
+
+        // Accessibility improvements
+        document.querySelectorAll('.btn').forEach(button => {
+            if (!button.hasAttribute('aria-label')) {
+                button.setAttribute('aria-label', button.textContent.trim());
+            }
+        });
+
+        // Dynamic tooltip system
+        function createTooltip(element, text) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip-dynamic';
+            tooltip.textContent = text;
+            tooltip.style.cssText = `
+                position: absolute;
+                background: var(--dark);
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 4px;
+                font-size: 0.85rem;
+                white-space: nowrap;
+                z-index: 10000;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s;
+            `;
+            document.body.appendChild(tooltip);
+            
+            const rect = element.getBoundingClientRect();
+            tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+            tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+            
+            setTimeout(() => tooltip.style.opacity = '1', 10);
+            
+            return tooltip;
+        }
+
+        // Add tooltips to capability tags
+        document.querySelectorAll('.capability-tag').forEach(tag => {
+            tag.addEventListener('mouseenter', function() {
+                const capability = this.textContent;
+                const descriptions = {
+                    'opportunity_analysis': 'Analyze opportunity details from CRM',
+                    'customer_profiling': 'Build comprehensive customer profiles',
+                    'usage_analysis': 'Analyze product usage patterns',
+                    'contact_discovery': 'Identify best customer contacts',
+                    'health_scoring': 'Calculate composite health scores',
+                    'adoption_tracking': 'Monitor product adoption',
+                    'risk_assessment': 'Predict churn probability',
+                    // Add more as needed
+                };
+                
+                if (descriptions[capability]) {
+                    this._tooltip = createTooltip(this, descriptions[capability]);
+                }
+            });
+            
+            tag.addEventListener('mouseleave', function() {
+                if (this._tooltip) {
+                    this._tooltip.remove();
+                    this._tooltip = null;
+                }
+            });
+        });
+
+        // Performance monitoring
+        const perfObserver = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+                if (entry.duration > 1000) {
+                    console.warn(`Slow operation detected: ${entry.name} took ${entry.duration}ms`);
+                }
+            }
+        });
+
+        if (window.PerformanceObserver) {
+            perfObserver.observe({ entryTypes: ['measure', 'navigation'] });
+        }
+
+        // Error boundary
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e.error);
+            // In production, send to error tracking service
+        });
+
+        // Service worker registration (for PWA capabilities)
+        if ('serviceWorker' in navigator) {
+            // Uncomment in production with proper service worker file
+            // navigator.serviceWorker.register('/sw.js')
+            //     .then(reg => console.log('Service Worker registered'))
+            //     .catch(err => console.log('Service Worker registration failed'));
+        }
+
+        // Export functionality
+        function exportToJSON() {
+            const data = {
+                platform: 'Red Hat Renewal Intelligence Platform',
+                version: '1.0',
+                exported: new Date().toISOString(),
+                roi_inputs: {
+                    revenue: document.getElementById('revenue').value,
+                    renewalRate: document.getElementById('renewalRate').value,
+                    numReps: document.getElementById('numReps').value,
+                    repCost: document.getElementById('repCost').value,
+                    quoteTime: document.getElementById('quoteTime').value,
+                    errorRate: document.getElementById('errorRate').value
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'renewal-platform-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Add export button to ROI section
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'btn btn-secondary mt-1';
+        exportBtn.textContent = '💾 Export Configuration';
+        exportBtn.onclick = exportToJSON;
+        document.querySelector('#roi .calculator').appendChild(exportBtn);
+
+        console.log('🚀 Red Hat Renewal Intelligence Platform microsite loaded successfully');
+        console.log('📊 Ready for exploration and ROI calculation');
+    </script>
+</body>
+</html>
