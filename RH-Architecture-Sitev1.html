@@ -83,11 +83,6 @@
             opacity: 0.9;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
         .btn {
             padding: 0.5rem 1.5rem;
             border: none;
@@ -696,105 +691,6 @@
             color: var(--danger);
         }
 
-        /* ROI Calculator */
-        .calculator {
-            background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            margin: 2rem 0;
-        }
-
-        .calculator-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-weight: 500;
-            color: var(--secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .input-group input {
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .calculator-results {
-            background: linear-gradient(135deg, var(--secondary) 0%, #001a33 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-        }
-
-        .result-item {
-            text-align: center;
-        }
-
-        .result-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        /* Download Section */
-        .download-section {
-            background: linear-gradient(135deg, var(--light) 0%, white 100%);
-            border-radius: 8px;
-            padding: 3rem;
-            text-align: center;
-            margin: 3rem 0;
-            box-shadow: var(--shadow);
-        }
-
-        .download-section h3 {
-            font-size: 2rem;
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-
-        .download-section p {
-            font-size: 1.1rem;
-            color: var(--medium);
-            margin-bottom: 2rem;
-        }
-
-        .download-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-large {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-        }
-
         /* Footer */
         .footer {
             background: var(--secondary);
@@ -885,7 +781,7 @@
 
         /* Print Styles */
         @media print {
-            .header, .nav-tabs, .footer, .btn, .download-section {
+            .header, .nav-tabs, .footer, .btn {
                 display: none;
             }
 
@@ -918,10 +814,6 @@
                     <p>AI-Powered B2B Sales Automation</p>
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="btn btn-primary" onclick="scrollToSection('roi')">Calculate ROI</button>
-                <button class="btn btn-secondary" onclick="scrollToSection('download')">Download Docs</button>
-            </div>
         </div>
     </header>
 
@@ -935,7 +827,6 @@
             <a class="nav-tab" data-section="data">Data Model</a>
             <a class="nav-tab" data-section="workflows">Workflows</a>
             <a class="nav-tab" data-section="implementation">Implementation</a>
-            <a class="nav-tab" data-section="roi">ROI Calculator</a>
             <a class="nav-tab" data-section="technical">Tech Specs</a>
         </div>
     </nav>
@@ -2465,109 +2356,6 @@
             </div>
         </section>
 
-        <!-- ROI Calculator Section -->
-        <section id="roi" class="section">
-            <div class="section-header">
-                <h2>ROI Calculator</h2>
-                <p>Calculate the expected return on investment for your organization</p>
-            </div>
-
-            <div class="calculator">
-                <h3>Input Your Current State</h3>
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Current Annual Renewal Revenue ($M)</label>
-                        <input type="number" id="revenue" value="45" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Current Renewal Rate (%)</label>
-                        <input type="number" id="renewalRate" value="82" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Number of CNX AMs</label>
-                        <input type="number" id="numReps" value="50" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Avg CNX AM Fully-Loaded Cost ($K)</label>
-                        <input type="number" id="repCost" value="120" step="5">
-                    </div>
-                    <div class="input-group">
-                        <label>Current Time-to-Quote (days)</label>
-                        <input type="number" id="quoteTime" value="6.5" step="0.5">
-                    </div>
-                    <div class="input-group">
-                        <label>Current Quote Error Rate (%)</label>
-                        <input type="number" id="errorRate" value="5" step="1">
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-large" onclick="calculateROI()">Calculate ROI</button>
-                
-                <div class="calculator-results mt-2" id="roiResults" style="display: none;">
-                    <div class="result-item">
-                        <div class="result-label">Year 1 Net Benefit</div>
-                        <div class="result-value" id="year1Benefit">$0M</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">3-Year Cumulative</div>
-                        <div class="result-value" id="cumulativeBenefit">$0M</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Payback Period</div>
-                        <div class="result-value" id="paybackPeriod">0 mo</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">3-Year ROI</div>
-                        <div class="result-value" id="roi">0%</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-grid mt-2">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">💰</div>
-                        <h3 class="card-title">Revenue Impact</h3>
-                    </div>
-                    <div class="card-body">
-                        <ul>
-                            <li>+3pp renewal rate improvement</li>
-                            <li>Faster close cycles (more deals/quarter)</li>
-                            <li>Predictive upsell identification</li>
-                            <li>Reduced revenue leakage from errors</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">⏱️</div>
-                        <h3 class="card-title">Efficiency Gains</h3>
-                    </div>
-                    <div class="card-body">
-                        <ul>
-                            <li>-83% prep time (3h → 30min)</li>
-                            <li>+33% rep capacity (150 → 200 accounts)</li>
-                            <li>-35% quote cycle time</li>
-                            <li>-80% quote error rate</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🎯</div>
-                        <h3 class="card-title">Quality Improvements</h3>
-                    </div>
-                    <div class="card-body">
-                        <ul>
-                            <li>95% automated UID reconciliation</li>
-                            <li>100% policy compliance</li>
-                            <li>Real-time risk detection</li>
-                            <li>Consistent customer experience</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Technical Specs Section -->
         <section id="technical" class="section">
             <div class="section-header">
@@ -2850,17 +2638,6 @@ async def handle_sfdc_opportunity_webhook(
             </div>
         </section>
 
-        <!-- Download Section -->
-        <section id="download" class="download-section">
-            <h3>Download Complete Documentation</h3>
-            <p>Get the full architecture guide, implementation playbooks, and technical specifications</p>
-            <div class="download-buttons">
-                <button class="btn btn-primary btn-large" onclick="downloadDocs('full')">📄 Complete Package (PDF)</button>
-                <button class="btn btn-secondary btn-large" onclick="downloadDocs('business')">💼 Business Summary</button>
-                <button class="btn btn-secondary btn-large" onclick="downloadDocs('technical')">🔧 Technical Guide</button>
-                <button class="btn btn-secondary btn-large" onclick="window.print()">🖨️ Print This Page</button>
-            </div>
-        </section>
     </main>
 
     <!-- Footer -->
@@ -2879,9 +2656,7 @@ async def handle_sfdc_opportunity_webhook(
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="#business">Business Case</a></li>
-                    <li><a href="#roi">ROI Calculator</a></li>
                     <li><a href="#technical">Tech Specs</a></li>
-                    <li><a href="#download">Documentation</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -2920,8 +2695,7 @@ async def handle_sfdc_opportunity_webhook(
                 document.getElementById(sectionId).classList.add('active');
                 
                 // Scroll to top of content
-                document.querySelector('.main-content').scrollInto
-                View({ behavior: 'smooth', block: 'start' });
+                document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
 
@@ -2949,14 +2723,6 @@ async def handle_sfdc_opportunity_webhook(
             });
         });
 
-        // Scroll to section
-        function scrollToSection(sectionId) {
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
         // Copy code functionality
         function copyCode(button) {
             const codeBlock = button.closest('.code-block');
@@ -2968,91 +2734,6 @@ async def handle_sfdc_opportunity_webhook(
                     button.textContent = 'Copy';
                 }, 2000);
             });
-        }
-
-        // ROI Calculator
-        function calculateROI() {
-            // Get inputs
-            const revenue = parseFloat(document.getElementById('revenue').value) * 1000000;
-            const renewalRate = parseFloat(document.getElementById('renewalRate').value) / 100;
-            const numReps = parseInt(document.getElementById('numReps').value);
-            const repCost = parseFloat(document.getElementById('repCost').value) * 1000;
-            const quoteTime = parseFloat(document.getElementById('quoteTime').value);
-            const errorRate = parseFloat(document.getElementById('errorRate').value) / 100;
-
-            // Calculate baseline metrics
-            const currentChurn = 1 - renewalRate;
-            const currentLostRevenue = revenue * currentChurn;
-            const totalRepCost = numReps * repCost;
-
-            // Calculate improvements
-            // 1. Revenue retention (+3pp improvement)
-            const renewalImprovement = 0.03;
-            const newRenewalRate = renewalRate + renewalImprovement;
-            const revenueRetentionBenefit = revenue * renewalImprovement;
-
-            // 2. Rep productivity (+33% capacity)
-            const productivityGain = 0.33;
-            const equivalentReps = numReps * productivityGain;
-            const productivityBenefit = equivalentReps * repCost;
-
-            // 3. Quote accuracy (-80% error rate)
-            const errorReduction = 0.80;
-            const currentReworkCost = revenue * errorRate * 0.02; // 2% of revenue affected
-            const accuracyBenefit = currentReworkCost * errorReduction;
-
-            // 4. Faster cycle (-35% time)
-            const cycleReduction = 0.35;
-            const cycleTimeBenefit = revenue * 0.01 * cycleReduction; // 1% revenue per 35% improvement
-
-            // Year 1 totals
-            const year1Benefit = revenueRetentionBenefit + productivityBenefit + accuracyBenefit + cycleTimeBenefit;
-            
-            // Year 2 additions (auto-renewal + predictive upsell)
-            const autoRenewalBenefit = productivityBenefit * 0.5; // 50% additional from automation
-            const upsellBenefit = revenue * 0.05; // 5% expansion
-            const year2Benefit = year1Benefit + autoRenewalBenefit + upsellBenefit;
-
-            // Year 3 (continued growth)
-            const year3Benefit = year2Benefit * 1.2; // 20% improvement
-
-            // Investment costs
-            const platformDev = 800000;
-            const dataInfra = 400000;
-            const integration = 300000;
-            const changeManagement = 200000;
-            const year1Ops = 600000;
-            const year1Investment = platformDev + dataInfra + integration + changeManagement + year1Ops;
-            const year2Investment = 800000;
-            const year3Investment = 900000;
-
-            // Calculate net benefits
-            const year1Net = year1Benefit - year1Investment;
-            const year2Net = year2Benefit - year2Investment;
-            const year3Net = year3Benefit - year3Investment;
-            const cumulativeNet = year1Net + year2Net + year3Net;
-            const totalInvestment = year1Investment + year2Investment + year3Investment;
-
-            // Payback period (months)
-            const monthlyBenefit = year1Benefit / 12;
-            const paybackMonths = Math.ceil(year1Investment / monthlyBenefit);
-
-            // ROI percentage
-            const roiPercent = (cumulativeNet / totalInvestment) * 100;
-
-            // Display results
-            document.getElementById('year1Benefit').textContent = `$${(year1Net / 1000000).toFixed(1)}M`;
-            document.getElementById('cumulativeBenefit').textContent = `$${(cumulativeNet / 1000000).toFixed(1)}M`;
-            document.getElementById('paybackPeriod').textContent = `${paybackMonths} mo`;
-            document.getElementById('roi').textContent = `${Math.round(roiPercent)}%`;
-            
-            document.getElementById('roiResults').style.display = 'grid';
-        }
-
-        // Download documentation
-        function downloadDocs(type) {
-            // In a real implementation, this would trigger actual file downloads
-            alert(`Downloading ${type} documentation package...\n\nIn production, this would provide:\n- PDF documentation\n- Implementation playbooks\n- API specifications\n- Training materials`);
         }
 
         // Smooth scroll for anchor links
@@ -3102,8 +2783,6 @@ async def handle_sfdc_opportunity_webhook(
                 }
             }
 
-            // Auto-calculate ROI with default values
-            calculateROI();
         });
 
         // Print optimization
@@ -3138,17 +2817,6 @@ async def handle_sfdc_opportunity_webhook(
                 trackEvent('Navigation', 'Section View', section);
             });
         });
-
-        // Track ROI calculations
-        document.querySelector('#roi .btn-primary').addEventListener('click', () => {
-            trackEvent('Engagement', 'ROI Calculated', 'Calculator');
-        });
-
-        // Track downloads
-        function downloadDocs(type) {
-            trackEvent('Conversion', 'Download', type);
-            alert(`📥 Downloading ${type} documentation...\n\nPackage includes:\n• Architecture diagrams\n• Implementation guides\n• API specifications\n• Training materials\n• Sample code & configs`);
-        }
 
         // Auto-update stats with animation
         function animateValue(element, start, end, duration) {
@@ -3214,21 +2882,6 @@ async def handle_sfdc_opportunity_webhook(
                 if (copyBtn) {
                     copyBtn.click();
                 }
-            });
-        });
-
-        // Auto-save form inputs to localStorage
-        const inputs = document.querySelectorAll('#roi input');
-        inputs.forEach(input => {
-            // Load saved value
-            const savedValue = localStorage.getItem(input.id);
-            if (savedValue) {
-                input.value = savedValue;
-            }
-            
-            // Save on change
-            input.addEventListener('change', () => {
-                localStorage.setItem(input.id, input.value);
             });
         });
 
@@ -3323,40 +2976,7 @@ async def handle_sfdc_opportunity_webhook(
             //     .catch(err => console.log('Service Worker registration failed'));
         }
 
-        // Export functionality
-        function exportToJSON() {
-            const data = {
-                platform: 'Red Hat Renewal Intelligence Platform',
-                version: '1.0',
-                exported: new Date().toISOString(),
-                roi_inputs: {
-                    revenue: document.getElementById('revenue').value,
-                    renewalRate: document.getElementById('renewalRate').value,
-                    numReps: document.getElementById('numReps').value,
-                    repCost: document.getElementById('repCost').value,
-                    quoteTime: document.getElementById('quoteTime').value,
-                    errorRate: document.getElementById('errorRate').value
-                }
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'renewal-platform-config.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Add export button to ROI section
-        const exportBtn = document.createElement('button');
-        exportBtn.className = 'btn btn-secondary mt-1';
-        exportBtn.textContent = '💾 Export Configuration';
-        exportBtn.onclick = exportToJSON;
-        document.querySelector('#roi .calculator').appendChild(exportBtn);
-
         console.log('🚀 Red Hat Renewal Intelligence Platform microsite loaded successfully');
-        console.log('📊 Ready for exploration and ROI calculation');
     </script>
 </body>
 </html>
