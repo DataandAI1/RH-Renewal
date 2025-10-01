@@ -695,35 +695,40 @@
         .footer {
             background: var(--secondary);
             color: white;
-            padding: 3rem 2rem;
-            margin-top: 4rem;
+            padding: 2rem 1.5rem;
+            margin-top: 3rem;
         }
 
         .footer-content {
-            max-width: 1400px;
+            max-width: 900px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
         }
 
         .footer-section h4 {
-            margin-bottom: 1rem;
-            color: var(--accent);
+            margin-bottom: 0.5rem;
+            color: rgba(255,255,255,0.9);
         }
 
         .footer-section ul {
             list-style: none;
+            display: flex;
+            gap: 1.5rem;
         }
 
         .footer-section li {
-            margin-bottom: 0.5rem;
+            margin: 0;
         }
 
         .footer-section a {
             color: rgba(255,255,255,0.8);
             text-decoration: none;
             transition: color 0.3s ease;
+            font-size: 0.95rem;
         }
 
         .footer-section a:hover {
@@ -732,10 +737,11 @@
 
         .footer-bottom {
             text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
             border-top: 1px solid rgba(255,255,255,0.1);
             color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
         }
 
         /* Responsive */
@@ -772,6 +778,12 @@
 
             .nav-container {
                 padding: 0 1rem;
+            }
+
+            .footer-section ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
             }
 
             .main-content {
@@ -2644,34 +2656,13 @@ async def handle_sfdc_opportunity_webhook(
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>Platform</h4>
+                <h4>Explore the Platform</h4>
                 <ul>
                     <li><a href="#overview">Overview</a></li>
                     <li><a href="#architecture">Architecture</a></li>
                     <li><a href="#agents">AI Agents</a></li>
                     <li><a href="#implementation">Implementation</a></li>
                 </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="#business">Business Case</a></li>
-                    <li><a href="#technical">Tech Specs</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="mailto:platform-team@redhat.com">Contact Team</a></li>
-                    <li><a href="#">Request Demo</a></li>
-                    <li><a href="#">Training Resources</a></li>
-                    <li><a href="#">API Documentation</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>About</h4>
-                <p>Red Hat Renewal Intelligence Platform combines cutting-edge AI with proven renewal processes to maximize retention and drive growth.</p>
-                <p style="margin-top: 1rem; opacity: 0.7;">Built with ❤️ by the RevOps & AI Platform Team</p>
             </div>
         </div>
         <div class="footer-bottom">
